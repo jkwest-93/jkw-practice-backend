@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.json());
 
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Flower Shop'
@@ -8,30 +9,18 @@ app.locals.flowers = [
     id: 1,
     name: 'Rose',
     image: 'https://images.freeimages.com/images/large-previews/4dd/rose-1514960.jpg',
-    quantity: {
-      amount: 4,
-      metric: 'Dozen'
-    },
     price: 25,
   },
   {
     id: 2,
     name: 'Tulip',
     image: 'https://images.freeimages.com/images/large-previews/e48/tulip-1401330.jpg',
-    quantity: {
-      amount: 8,
-      metric: 'Pack of 15 (assorted colors)'
-    },
     price: 35
   },
   {
     id: 3,
     name: 'Orchid',
     image: 'https://images.freeimages.com/images/large-previews/d0f/orchid-1363254.jpg',
-    quantity: {
-      amount: 12,
-      metric: 'Double Stem Plant'
-    },
     price: 45
   }
 ]
@@ -57,6 +46,23 @@ app.get('/api/v1/flowers/:id', (request, response) => {
   }
 
   response.status(200).json(flower)
+})
+
+app.post('/api/v1/flowers', (request, response) => {
+  const requiredProperties = ['name', 'image', 'price'];
+  for (let property of requiredProperties) {
+    if(!request.body[property]) {
+      return response.status(422).json({
+        errorMessage: `Cannot POST: no property of ${property} in request`
+      })
+    }
+  }
+
+  const { name, image, price } = request.body;
+  const id = Date.now().toString();
+
+  app.locals.flowers.push({ id, name, image, price })
+  response.status(201).json({ id, name, image, price })
 })
 
 app.listen(app.get('port'), () => {
