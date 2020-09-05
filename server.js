@@ -65,6 +65,18 @@ app.post('/api/v1/flowers', (request, response) => {
   response.status(201).json({ id, name, image, price })
 })
 
+app.delete('/api/v1/flowers/:id', (request, response) => {
+  const { id } = request.params;
+  const foundFlower = app.locals.flowers.find(flower => flower.id.toString() === id)
+
+  if(!foundFlower) {
+    return response.status(404).json({errorMessage: `Cannot find flowerwith id of ${id}`})
+  }
+
+  app.locals.flowers = app.locals.flowers.filter(flower => flower.id.toString() !== id)
+  response.sendStatus(204)
+})
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on http://localhost:${app.get('port')}`)
 })
