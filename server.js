@@ -36,6 +36,10 @@ app.locals.flowers = [
   }
 ]
 
+app.get('/', (request, response) => {
+  response.send('Flower Shop Inventory')
+})
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on http://localhost:${app.get('port')}`)
 })
