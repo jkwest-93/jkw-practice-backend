@@ -30,7 +30,7 @@ app.locals.flowers = [
     image: 'https://images.freeimages.com/images/large-previews/d0f/orchid-1363254.jpg',
     quantity: {
       amount: 12,
-      metric: 'Double Stem Plants'
+      metric: 'Double Stem Plant'
     },
     price: 45
   }
@@ -38,6 +38,25 @@ app.locals.flowers = [
 
 app.get('/', (request, response) => {
   response.send('Flower Shop Inventory')
+})
+
+app.get('/api/v1/flowers', (request, response) => {
+  const flowers = app.locals.flowers;
+
+  response.json({ flowers });
+})
+
+app.get('/api/v1/flowers/:id', (request, response) => {
+  const id = request.params.id;
+  const flower = app.locals.flowers.find(flower => flower.id.toString() === id)
+
+  if(!flower) {
+    response.satatus(404).json({
+      errorMessage: `Could not find a flower with an id of ${id}`
+    })
+  }
+
+  response.status(200).json(flower)
 })
 
 app.listen(app.get('port'), () => {
